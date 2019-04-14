@@ -1,5 +1,4 @@
 [BITS 32]
-[ORG 0x1000]
 
 %define vgac(c,blink,bg,int,fg) ((c)|(blink<<15)|(bg<<12)|(int<<11)|(fg<<8))
 %define NOIR  0
@@ -16,7 +15,27 @@
   mov word [0xB8A04], vgac('y', 0, CYAN,  1, NOIR)
   mov word [0xB8A06], vgac('a', 1, ROUGE, 1, BLEU)
   mov word [0xB8A08], vgac('u', 1, MAGEN, 1, VERT)
+
+EXTERN scroll_up, prints
+GLOBAL _start
+
+_start:
+  mov eax, msg
+  push eax
+  call prints
+  pop eax
   
+  mov eax, msg2
+  push eax
+  call prints
+  pop eax
+
+  mov eax, 2
+  push eax
+  call scroll_up
 
 end:
   jmp end
+
+msg: db 'un premier message', 10, 0
+msg2: db 'un deuxième message', 10, 0

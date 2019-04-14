@@ -1,5 +1,5 @@
 %define BASE	0x100	; 0x0100:0000 = 0x1000
-%define KSIZE	1	; № of 512B sectors to load
+%define KSIZE	50	; № of 512B sectors to load
 
 [BITS 16]  ; indique a Nasm que l'on travaille en 16 bits
 [ORG 0x0]
