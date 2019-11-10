@@ -1,13 +1,26 @@
 OBJ=floppyA
-CC=i686-elf-gcc
+
+KERNEL_CFLAGS=--std=gnu11
+
+KERNEL_SRCDIR=.
+KERNEL_OBJS=\
+$(KERNEL_SRCDIR)/kernel.o\
+$(KERNEL_SRCDIR)/screen.o\
+$(KERNEL_SRCDIR)/gdt.o\
+$(KERNEL_SRCDIR)/lib.o\
+$(KERNEL_SRCDIR)/logging.o\
+$(KERNEL_SRCDIR)/string.o
+
+CC=i686-pc-elf-gcc
+LD=i686-pc-elf-ld
 
 all: $(OBJ) 
 
 floppyA: bootsect kernel
 	cat bootsect kernel /dev/zero | dd of=floppyA bs=512 count=2880
 
-kernel: kernel.o screen.o
-	i686-elf-ld --oformat binary -Ttext 1000 kernel.o screen.o -o kernel
+kernel: $(KERNEL_OBJS)
+	$(LD) --oformat binary -Ttext 1000 $(KERNEL_OBJS) -o kernel
 
 #kernel.o: kernel.asm 
 #	nasm -f elf32 -o $@ $^
@@ -15,8 +28,8 @@ kernel: kernel.o screen.o
 bootsect: bootsect.asm
 	nasm -f bin -o $@ $^
 
-.o: .c 
-	$(CC) -c $^
+%.o: %.c 
+	$(CC) $(KERNEL_CFLAGS) -c $^
 
 clean:
 	rm -f $(OBJ) *.o bootsect kernel
